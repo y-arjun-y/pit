@@ -50,15 +50,14 @@ class Player(object):
     def closing_bell_confirmed(self, player):
         """The game engine has confirmed that a player has won this round"""
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
-    def __str__(self):
-        return unicode(self).encode('utf-8')
-
     def __repr__(self):
-        return unicode(self).encode('utf-8')
+        return str(self)
 
     def __eq__(self, player):
         """Returns True iff this player's name matches the other's"""
-        return self.name == player.name
+        if isinstance(other, Player):
+            return self.name == other.name
+        return False

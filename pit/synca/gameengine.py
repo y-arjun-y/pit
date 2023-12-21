@@ -5,7 +5,7 @@ TODO:
 """
 import copy
 import multiprocessing
-import Queue
+from queue import Queue
 import random
 import threading
 import time
@@ -90,7 +90,7 @@ class GameEngine(object):
         self.wait_for_players(Message.ALL_SET)
         for game in range(games):
             winner = self.one_game()
-            print '{0} won this game'.format(self.player_data[winner]['name'])
+            print('{0} won this game'.format(self.player_data[winner]['name']))
             self.debug()
         self.tear_down()
 
@@ -254,7 +254,7 @@ class GameEngine(object):
             data['score'] += util.score_hand(data['cards'])
             if data['score'] >= config.WINNING_SCORE:
                 self.game_winner = self.round_winner
-        print 'ROUND WINNER IS {0}'.format(self.player_data[self.round_winner]['name'])
+        print('ROUND WINNER IS {0}'.format(self.player_data[self.round_winner]['name']))
         self.debug()
 
     def end_game(self):
@@ -312,12 +312,12 @@ class GameEngine(object):
 
     def debug(self):
         msg = '{name} {uid}: {score} {cards} {binding_offers}'
-        print '---------------------------'
+        print('---------------------------')
         for uid, data in self.player_data.iteritems():
             offers = []
             for offer in data['binding_offers']:
                 offers.append('BO: {cards} TO {to}'.format(to=offer.target_uid, cards=sorted(offer.cards)))
             print msg.format(name=data['name'], uid=uid, score=data['score'], cards=sorted(data['cards']), binding_offers=offers)
-        print '---------------------------'
-        print ''
-        print ''
+        print('---------------------------')
+        print('')
+        print('')

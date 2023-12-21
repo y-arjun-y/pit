@@ -41,14 +41,11 @@ class Action(object):
         self.player = player
         self.cycle = -1 # to be set by game engine
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Action'
 
-    def __str__(self):
-        return unicode(self).encode('utf-8')
-
     def __repr__(self):
-        return unicode(self).encode('utf-8')
+        return str(self)
 
     def copy(self):
         """Should return a new instance that is a copy of the action"""
@@ -64,7 +61,7 @@ class Offer(Action):
             raise Exception('Offers can only be up to four cards')
         self.quantity = quantity
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Offer in cycle {2} by {0} for {1}'.format(
             self.player, self.quantity, self.cycle)
 
@@ -78,6 +75,9 @@ class Offer(Action):
         """Returns True iff all fields of this offer equal the other"""
         return (self.player == offer.player and
                 self.quantity == offer.quantity)
+
+    # def __hash__(self):
+    #     return hash(self.player)
 
 
 class Response(Action):
@@ -95,7 +95,7 @@ class Response(Action):
         self.offer = offer
         self.cards = cards
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Response in cycle {2} by {0} to {1}'.format(
             self.player, self.offer, self.cycle)
 
@@ -108,7 +108,7 @@ class Response(Action):
 
 class BellRing(Action):
     """The action of ringing the bell to indicate that you have won the round"""
-    def __unicode__(self):
+    def __str__(self):
         return 'Bell Ring in cycle {1} by {0}'.format(self.player, self.cycle)
 
 
@@ -327,13 +327,14 @@ class GameEngine(object):
 
     def debug(self):
         """Helper to print game state and exit game"""
-        print 'CYCLE {0}'.format(self.cycle)
+        print('CYCLE {0}'.format(self.cycle))
         for player in self.players:
             cards = copy.copy(self.player_info[player]['cards'])
             cards.sort()
-            print 'PLAYER {0}: score={1} cards={2}'.format(
-                unicode(player), self.player_info[player]['score'], cards)
-        print 'OFFERS {0}'.format(self.offers)
-        print 'IN PLAY? {0}'.format(self.in_play)
-        print 'BUSY? {0}'.format(self.busy_players)
-        print '---------------'
+            print('PLAYER {0}: score={1} cards={2}'.format(
+                str(player), self.player_info[player]['score'], cards))
+        print('OFFERS {0}'.format(self.offers))
+        print('IN PLAY? {0}'.format(self.in_play))
+        print('BUSY? {0}'.format(self.busy_players))
+        print('---------------')
+

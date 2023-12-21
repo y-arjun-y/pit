@@ -3,7 +3,7 @@
 import random
 import threading
 
-from pit.async import gameengine
+from pit.synca import gameengine
 
 
 class NullPlayer(gameengine.Player):
