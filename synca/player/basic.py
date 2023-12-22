@@ -8,9 +8,10 @@ import random
 import threading
 import time
 
-from pit import config, util
-from pit.synca import gameengine
-from pit.synca.player import base
+import config
+import util
+from synca import gameengine
+from synca.player import base
 
 
 # seconds before withdrawing a binding offer

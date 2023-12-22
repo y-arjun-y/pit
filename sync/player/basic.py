@@ -4,9 +4,10 @@ import copy
 import itertools
 import random
 
-from pit import config, util
-from pit.sync import gameengine
-from pit.sync.player import base
+import config
+import util
+from sync import gameengine
+from sync.player import base
 
 
 class BasicPlayer(base.Player):
@@ -99,7 +100,7 @@ class BasicPlayer(base.Player):
         """
         bull = config.BULL
         bear = config.BEAR
-        commodities = self.card_groups.keys()
+        commodities = list(self.card_groups.keys())
         random.shuffle(commodities)
         for commodity in commodities:
             quantity = self.card_groups[commodity]

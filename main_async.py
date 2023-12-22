@@ -1,7 +1,7 @@
 import time
 
-from pit.synca import gameengine
-from pit.synca.player import base, basic
+from synca import gameengine
+from synca.player import base, basic
 
 
 
