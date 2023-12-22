@@ -123,7 +123,7 @@ class BasicPlayer(base.Player):
         Max of 4 cards can be part of an offer
         """
         existing_quantities = [offer.quantity for offer in self.my_offers]
-        quantities = self.card_groups.values()
+        quantities = list(self.card_groups.values())
         random.shuffle(quantities)
         for quantity in quantities:
             if quantity <= 4 and quantity not in existing_quantities:
@@ -140,4 +140,4 @@ class BasicPlayer(base.Player):
     def _active_offers(self, offers):
         """Return list of offers that have not expired"""
         exp = lambda offer: self.cycle - offer.cycle > self.OFFER_EXPIRATION
-        return list(itertools.ifilterfalse(exp, offers))
+        return list(itertools.filterfalse(exp, offers))

@@ -3,6 +3,7 @@
 TODO:
  - add validation check that offer cards are legal (all same plus bull/bear)
 """
+
 import copy
 import multiprocessing
 from queue import Queue
@@ -10,8 +11,8 @@ import random
 import threading
 import time
 
-from pit import config, util
-
+import config
+import util
 
 class Message(object):
     """A message sent between game engine and player(s).
@@ -317,7 +318,7 @@ class GameEngine(object):
             offers = []
             for offer in data['binding_offers']:
                 offers.append('BO: {cards} TO {to}'.format(to=offer.target_uid, cards=sorted(offer.cards)))
-            print msg.format(name=data['name'], uid=uid, score=data['score'], cards=sorted(data['cards']), binding_offers=offers)
+            print(msg.format(name=data['name'], uid=uid, score=data['score'], cards=sorted(data['cards']), binding_offers=offers))
         print('---------------------------')
         print('')
         print('')

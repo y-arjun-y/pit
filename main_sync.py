@@ -1,7 +1,9 @@
 """Runs a synchronous Pit game using the Game Engine and Player from pit.sync
 """
-import pit.sync.gameengine as gameengine
-import pit.sync.player.basic as basic
+
+
+from sync import gameengine
+from sync.player import basic
 
 
 engine = gameengine.GameEngine()
@@ -18,4 +20,4 @@ players.append(basic.BasicPlayer('pat'))
 games = 10
 
 results = engine.play(players, games=games)
-print results
+print(results)

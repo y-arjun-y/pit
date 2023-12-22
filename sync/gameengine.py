@@ -23,8 +23,8 @@ import copy
 import itertools
 import random
 
-from pit import config, util
-
+import config
+import util
 
 # number of cycles before an offer expires
 OFFER_CYCLES = 10
@@ -290,12 +290,12 @@ class GameEngine(object):
         """
         expired_offers = list(filter(
             self.expired_offer, self.offers))
-        self.offers = list(itertools.ifilterfalse(
+        self.offers = list(itertools.filterfalse(
             self.expired_offer, self.offers))
         for offer in expired_offers:
             offer.player.offer_expired(offer)
 
-        for player in self.busy_players.keys():
+        for player in list(self.busy_players.keys()):
             if self.cycle >= self.busy_players[player]:
                 del self.busy_players[player]
 

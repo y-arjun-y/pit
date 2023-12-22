@@ -2,8 +2,7 @@
 """
 import copy
 import random
-
-from pit import config
+import config
 
 
 def swap_cards(cards1, trade1, cards2, trade2):

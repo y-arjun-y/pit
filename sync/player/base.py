@@ -57,7 +57,7 @@ class Player(object):
         return str(self)
 
     def __eq__(self, player):
-        """Returns True iff this player's name matches the other's"""
-        if isinstance(other, Player):
-            return self.name == other.name
-        return False
+        return self.name == player.name
+
+    def __hash__(self):
+        return hash(repr(self))
