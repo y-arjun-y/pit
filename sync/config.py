@@ -2,17 +2,18 @@
 
 This isn't meant to be a complex configuration management, just some settings.
 """
+
 WINNING_SCORE = 500
 
 COMMODITIES = [
-    'wheat',
-    'barley',
-    'coffee',
-    'corn',
-    'sugar',
-    'oats',
-    'soybeans',
-    'oranges',
+    "wheat",
+    "barley",
+    "coffee",
+    "corn",
+    "sugar",
+    "oats",
+    "soybeans",
+    "oranges",
 ]
 
 COMMODITY_VALUES = {
@@ -28,7 +29,7 @@ COMMODITY_VALUES = {
 
 COMMODITIES_PER_HAND = 9
 
-BULL = 'bull'
+BULL = "bull"
 BULL_PENALTY = 20
-BEAR = 'bear'
+BEAR = "bear"
 BEAR_PENALTY = 20

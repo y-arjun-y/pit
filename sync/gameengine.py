@@ -19,6 +19,7 @@ delayed yet again).
 TODO LIST:
 - notification about responses made and rejected
 """
+
 import copy
 import itertools
 import random
@@ -39,10 +40,10 @@ TRADE_DURATION = 4
 class Action(object):
     def __init__(self, player):
         self.player = player
-        self.cycle = -1 # to be set by game engine
+        self.cycle = -1  # to be set by game engine
 
     def __str__(self):
-        return 'Action'
+        return "Action"
 
     def __repr__(self):
         return str(self)
@@ -53,17 +54,18 @@ class Action(object):
 
 
 class Offer(Action):
-    """An offer to trade a certain number of cards, made to anyone/everyone.
-    """
+    """An offer to trade a certain number of cards, made to anyone/everyone."""
+
     def __init__(self, player, quantity):
         super(Offer, self).__init__(player)
         if quantity > 4:
-            raise Exception('Offers can only be up to four cards')
+            raise Exception("Offers can only be up to four cards")
         self.quantity = quantity
 
     def __str__(self):
-        return 'Offer in cycle {2} by {0} for {1}'.format(
-            self.player, self.quantity, self.cycle)
+        return "Offer in cycle {2} by {0} for {1}".format(
+            self.player, self.quantity, self.cycle
+        )
 
     def copy(self):
         """Returns a copy of this offer"""
@@ -73,8 +75,7 @@ class Offer(Action):
 
     def __eq__(self, offer):
         """Returns True iff all fields of this offer equal the other"""
-        return (self.player == offer.player and
-                self.quantity == offer.quantity)
+        return self.player == offer.player and self.quantity == offer.quantity
 
     # def __hash__(self):
     #     return hash(self.player)
@@ -87,6 +88,7 @@ class Response(Action):
     offers or responses with these cards until this response is confirmed,
     withdrawn, or expired.
     """
+
     def __init__(self, offer, player, cards):
         """Game engine needs to know the cards so it can execute a trade. They
         will be removed before the response is sent to the target player.
@@ -96,8 +98,9 @@ class Response(Action):
         self.cards = cards
 
     def __str__(self):
-        return 'Response in cycle {2} by {0} to {1}'.format(
-            self.player, self.offer, self.cycle)
+        return "Response in cycle {2} by {0} to {1}".format(
+            self.player, self.offer, self.cycle
+        )
 
     def copy(self):
         """Returns a copy of this response"""
@@ -108,8 +111,9 @@ class Response(Action):
 
 class BellRing(Action):
     """The action of ringing the bell to indicate that you have won the round"""
+
     def __str__(self):
-        return 'Bell Ring in cycle {1} by {0}'.format(self.player, self.cycle)
+        return "Bell Ring in cycle {1} by {0}".format(self.player, self.cycle)
 
 
 class GameEngine(object):
@@ -118,21 +122,20 @@ class GameEngine(object):
         self.players = players
         results = dict([(player, 0) for player in players])
         for game in range(games):
-            dealer = random.randint(0,len(players)-1)
+            dealer = random.randint(0, len(players) - 1)
             winner = self.one_game(starting_dealer=dealer)
             results[winner] += 1
         return results
 
     def one_game(self, starting_dealer=0):
-        """Play one game and returns winning player.
-        """
+        """Play one game and returns winning player."""
         self.player_info = {}
         self.dealer = starting_dealer
         # so players can't edit and mess each other up
         players = tuple(self.players)
         for player in players:
-            self.player_info[player] = {'score': 0}
-            player.new_game(players, config.COMMODITIES[:len(players)])
+            self.player_info[player] = {"score": 0}
+            player.new_game(players, config.COMMODITIES[: len(players)])
 
         self.winner = None
         while not self.winner:
@@ -141,21 +144,20 @@ class GameEngine(object):
         return self.winner
 
     def one_round(self):
-        """Plays round, updates scores, sets self.winner if anyone won
-        """
+        """Plays round, updates scores, sets self.winner if anyone won"""
         self.cycle = 0
         self.in_play = True
         self.offers = []
         self.busy_players = {}
 
         self.deal_cards()
-        
+
         card_counts = {}
         for player in self.players:
-            card_counts[player] = len(self.player_info[player]['cards'])
+            card_counts[player] = len(self.player_info[player]["cards"])
 
         for player in self.players:
-            hand = copy.copy(self.player_info[player]['cards'])
+            hand = copy.copy(self.player_info[player]["cards"])
             player.new_round(hand, card_counts.copy())
 
         while self.in_play:
@@ -199,7 +201,6 @@ class GameEngine(object):
             player.offer_made(offer.copy())
         self.delay_player(offer.player, OFFER_DURATION)
 
-
     def send_response(self, response):
         """Issue a response to player who made initial offer.
 
@@ -219,18 +220,22 @@ class GameEngine(object):
         response_cards = response.cards
         response.cards = None
 
-        if (response.offer in self.offers and
-                response.player != response.offer.player and
-                util.has_cards(response_cards, self.player_info[response.player]['cards'], [])):
+        if (
+            response.offer in self.offers
+            and response.player != response.offer.player
+            and util.has_cards(
+                response_cards, self.player_info[response.player]["cards"], []
+            )
+        ):
             confirm_cards = response.offer.player.response_made(response)
-            if (confirm_cards and
-                  util.has_cards(confirm_cards, self.player_info[response.offer.player]['cards'], [])):
+            if confirm_cards and util.has_cards(
+                confirm_cards, self.player_info[response.offer.player]["cards"], []
+            ):
                 self.confirm(response, response_cards, confirm_cards)
                 return
         # player rejected response or offer was already removed
         response.player.response_rejected(response)
         self.delay_player(response.player, RESPONSE_DURATION)
-
 
     def confirm(self, response, response_cards, confirm_cards):
         """Confirm a trade between two players
@@ -240,17 +245,23 @@ class GameEngine(object):
         self.offers.remove(response.offer)
 
         util.swap_cards(
-            self.player_info[response.player]['cards'],
+            self.player_info[response.player]["cards"],
             response_cards,
-            self.player_info[response.offer.player]['cards'],
-            confirm_cards)
+            self.player_info[response.offer.player]["cards"],
+            confirm_cards,
+        )
 
         # notify players of trade, send full hands to the two involved
         for player in self.players:
             if player == response.player:
-                player.trade_confirmation(response.copy(), hand=self.player_info[response.player]['cards'])
+                player.trade_confirmation(
+                    response.copy(), hand=self.player_info[response.player]["cards"]
+                )
             elif player == response.offer.player:
-                player.trade_confirmation(response.copy(), hand=self.player_info[response.offer.player]['cards'])
+                player.trade_confirmation(
+                    response.copy(),
+                    hand=self.player_info[response.offer.player]["cards"],
+                )
             elif player in self.available_players():
                 player.trade_confirmation(response.copy(), hand=None)
 
@@ -263,7 +274,7 @@ class GameEngine(object):
         for player in self.players:
             player.closing_bell(bell_ring.player)
 
-        if util.is_winning_hand(self.player_info[bell_ring.player]['cards']):
+        if util.is_winning_hand(self.player_info[bell_ring.player]["cards"]):
             self.in_play = False
             for player in self.players:
                 player.closing_bell_confirmed(bell_ring.player)
@@ -277,9 +288,9 @@ class GameEngine(object):
     def update_scores(self):
         """Updates player scores at end of a round, sets winner if any."""
         for player in self.players:
-            score = util.score_hand(self.player_info[player]['cards'])
-            self.player_info[player]['score'] += score
-            if self.player_info[player]['score'] >= config.WINNING_SCORE:
+            score = util.score_hand(self.player_info[player]["cards"])
+            self.player_info[player]["score"] += score
+            if self.player_info[player]["score"] >= config.WINNING_SCORE:
                 self.winner = player
 
     def end_cycle(self):
@@ -288,10 +299,8 @@ class GameEngine(object):
         - removes any expired offers
         - restores busy players who are done being busy
         """
-        expired_offers = list(filter(
-            self.expired_offer, self.offers))
-        self.offers = list(itertools.filterfalse(
-            self.expired_offer, self.offers))
+        expired_offers = list(filter(self.expired_offer, self.offers))
+        self.offers = list(itertools.filterfalse(self.expired_offer, self.offers))
         for offer in expired_offers:
             offer.player.offer_expired(offer)
 
@@ -310,7 +319,7 @@ class GameEngine(object):
         """Sets game_state cards to a new set of shuffled cards"""
         cards = util.deal_cards(len(self.players), self.dealer)
         for index, player in enumerate(self.players):
-            self.player_info[player]['cards'] = cards[index]
+            self.player_info[player]["cards"] = cards[index]
 
     def next_dealer(self):
         """Advances dealer"""
@@ -327,14 +336,16 @@ class GameEngine(object):
 
     def debug(self):
         """Helper to print game state and exit game"""
-        print('CYCLE {0}'.format(self.cycle))
+        print("CYCLE {0}".format(self.cycle))
         for player in self.players:
-            cards = copy.copy(self.player_info[player]['cards'])
+            cards = copy.copy(self.player_info[player]["cards"])
             cards.sort()
-            print('PLAYER {0}: score={1} cards={2}'.format(
-                str(player), self.player_info[player]['score'], cards))
-        print('OFFERS {0}'.format(self.offers))
-        print('IN PLAY? {0}'.format(self.in_play))
-        print('BUSY? {0}'.format(self.busy_players))
-        print('---------------')
-
+            print(
+                "PLAYER {0}: score={1} cards={2}".format(
+                    str(player), self.player_info[player]["score"], cards
+                )
+            )
+        print("OFFERS {0}".format(self.offers))
+        print("IN PLAY? {0}".format(self.in_play))
+        print("BUSY? {0}".format(self.busy_players))
+        print("---------------")

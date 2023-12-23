@@ -1,5 +1,6 @@
 """Base Player class(es) to provide useful functionality for subclasses.
 """
+
 import random
 import threading
 
@@ -14,9 +15,9 @@ class NullPlayer(gameengine.Player):
     actual plays (i.e. making & responding to offers). It also breaks most game
     events into separate methods for easy overriding.
     """
+
     def set_up(self, conn, queue, uid):
-        """Initializes internal state and starts listener thread.
-        """
+        """Initializes internal state and starts listener thread."""
         self.conn = conn
         self.queue = queue
         self.uid = uid
@@ -27,14 +28,12 @@ class NullPlayer(gameengine.Player):
         self.listen()
 
     def new_game(self, message):
-        """Resets state at the start of a new game.
-        """
+        """Resets state at the start of a new game."""
         self.game_over_event.clear()
         self.notify(gameengine.Message.GAME_READY)
 
     def new_round(self, message):
-        """Resets state at start of a new round.
-        """
+        """Resets state at start of a new round."""
         self.round_over_event.clear()
         round_loop = threading.Thread(target=self.round_loop, args=())
         round_loop.daemon = True
@@ -51,12 +50,11 @@ class NullPlayer(gameengine.Player):
 
             # this will block, allowing the current thread to release the cpu
             # without this, sometimes the thread never ends
-            self.round_over_event.wait(.0001)
+            self.round_over_event.wait(0.0001)
         self.notify(gameengine.Message.ROUND_DONE)
 
     def make_plays(self):
-        """Does nothing (but would be a good place to put actions on the queue)
-        """
+        """Does nothing (but would be a good place to put actions on the queue)"""
 
     def round_over(self, message):
         """Called when round over message received
@@ -90,8 +88,7 @@ class NullPlayer(gameengine.Player):
         """Called when binding offer (to or from me) is withdrawn"""
 
     def listen(self):
-        """Listens for messages from the game engine and update internal state.
-        """
+        """Listens for messages from the game engine and update internal state."""
         actions = {
             # gameplay events
             gameengine.Message.NEW_GAME: self.new_game,
@@ -99,7 +96,6 @@ class NullPlayer(gameengine.Player):
             gameengine.Message.ROUND_OVER: self.round_over,
             gameengine.Message.GAME_OVER: self.game_over,
             gameengine.Message.DONE: self.done,
-
             # player actions
             gameengine.Message.OFFER: self.handle_offer,
             gameengine.Message.BINDING_OFFER: self.handle_binding_offer,
@@ -114,8 +110,8 @@ class NullPlayer(gameengine.Player):
 
     def notify(self, message, cards=[], count=0, target_uid=None):
         """Helper to put a message on the queue"""
-        self.queue.put(gameengine.Message(message,
-                                          uid=self.uid,
-                                          cards=cards,
-                                          count=count,
-                                          target_uid=target_uid))
+        self.queue.put(
+            gameengine.Message(
+                message, uid=self.uid, cards=cards, count=count, target_uid=target_uid
+            )
+        )

@@ -1,5 +1,6 @@
 """Some helpful utility methods
 """
+
 import copy
 import random
 import config
@@ -28,13 +29,13 @@ def has_cards(search_cards, cards, locked_groups):
 
 
 def is_winning_hand(cards):
-    """Returns True if these cards represent a winning hand.
-    """
+    """Returns True if these cards represent a winning hand."""
     if config.BEAR in cards:
         return False
     count = cards.count(max(set(cards), key=cards.count))
     return count == config.COMMODITIES_PER_HAND or (
-           count == (config.COMMODITIES_PER_HAND - 1) and config.BULL in cards)
+        count == (config.COMMODITIES_PER_HAND - 1) and config.BULL in cards
+    )
 
 
 def score_hand(cards):
@@ -42,7 +43,10 @@ def score_hand(cards):
     if is_winning_hand(cards):
         commodity = max(set(cards), key=cards.count)
         score = config.COMMODITY_VALUES[commodity]
-        if cards.count(commodity) == config.COMMODITIES_PER_HAND and config.BULL in cards:
+        if (
+            cards.count(commodity) == config.COMMODITIES_PER_HAND
+            and config.BULL in cards
+        ):
             score *= 2
     else:
         score = 0
@@ -73,8 +77,11 @@ def available_card_groups(cards, locked_cards):
 
 def matching_groups(card_groups, quantity):
     """Returns list of groups whose length matches the given quantity"""
-    return [[card] * quantity for card in card_groups.keys()
-            if card_groups[card] == quantity]
+    return [
+        [card] * quantity
+        for card in card_groups.keys()
+        if card_groups[card] == quantity
+    ]
 
 
 def matching_groups_with(cards, card_groups, quantity):
@@ -87,7 +94,7 @@ def matching_groups_with(cards, card_groups, quantity):
     groups = card_groups.copy()
     for card in cards:
         del groups[card]
-    matches = matching_groups(groups, quantity-len(cards))
+    matches = matching_groups(groups, quantity - len(cards))
     return [match + cards for match in matches]
 
 
@@ -99,7 +106,7 @@ def deal_cards(num_players, dealer):
     """
     deck = [config.BULL, config.BEAR]
     for card in config.COMMODITIES[:num_players]:
-        deck.extend([card]*config.COMMODITIES_PER_HAND)
+        deck.extend([card] * config.COMMODITIES_PER_HAND)
     random.shuffle(deck)
 
     cards = []

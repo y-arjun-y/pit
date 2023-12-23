@@ -3,6 +3,7 @@
 TODO
  - still consider syncronizing access to cards & other data
 """
+
 import copy
 import random
 import threading
@@ -15,18 +16,17 @@ from synca.player import base
 
 
 # seconds before withdrawing a binding offer
-BINDING_OFFER_LIFETIME = .01
+BINDING_OFFER_LIFETIME = 0.01
 
 # will respond to open offers until hitting this limit
 LOCKED_CARDS_LIMIT = 5
 
 
 class SimplePlayer(base.NullPlayer):
-    """A fully functional Pit player, just not very good.
-    """
+    """A fully functional Pit player, just not very good."""
+
     def new_round(self, message):
-        """Resets state at start of a new round.
-        """
+        """Resets state at start of a new round."""
         self.already_rang = False
         self.cards = message.cards
         self.locked_cards = []
@@ -36,8 +36,7 @@ class SimplePlayer(base.NullPlayer):
         super(SimplePlayer, self).new_round(message)
 
     def make_plays(self):
-        """Main game play method makes & responds to offers, etc.
-        """
+        """Main game play method makes & responds to offers, etc."""
         if not self.already_rang and util.is_winning_hand(self.cards):
             self.notify(gameengine.Message.RING_BELL)
             self.already_rang = True
@@ -47,15 +46,14 @@ class SimplePlayer(base.NullPlayer):
         self.make_offers()
 
     def clear_outgoing_offers(self):
-        """Attempts to withdraw any previous binding offers that have expired.
-        """
+        """Attempts to withdraw any previous binding offers that have expired."""
         now = time.time()
         for added, cards, target_uid in self.outgoing_offers:
             if now - added > BINDING_OFFER_LIFETIME:
                 if all([card in self.locked_cards for card in cards]):
-                    self.notify(gameengine.Message.WITHDRAW,
-                                cards=cards,
-                                target_uid=target_uid)
+                    self.notify(
+                        gameengine.Message.WITHDRAW, cards=cards, target_uid=target_uid
+                    )
                 else:
                     self.outgoing_offers.remove((added, cards, target_uid))
 
@@ -67,14 +65,12 @@ class SimplePlayer(base.NullPlayer):
             self.attempt_response(offer)
         if self.open_offers:
             if len(self.locked_cards) < LOCKED_CARDS_LIMIT:
-                self.attempt_response(self.open_offers[0
-                    ])
+                self.attempt_response(self.open_offers[0])
         self.incoming_offers = []
         self.open_offers = []
 
     def attempt_response(self, offer):
-        """If cards are available, issues a binding offer to match the offer.
-        """
+        """If cards are available, issues a binding offer to match the offer."""
         # because I haven't syncronized access to self.cards and self.locked_cards
         # this will sometimes get a KeyError accessing data that has been deleted
         # by the other thread - ok to just ignore & move on
@@ -84,7 +80,9 @@ class SimplePlayer(base.NullPlayer):
         except KeyError:
             return None
         if cards:
-            self.notify(gameengine.Message.BINDING_OFFER, cards=cards, target_uid=offer.uid)
+            self.notify(
+                gameengine.Message.BINDING_OFFER, cards=cards, target_uid=offer.uid
+            )
             self.locked_cards.extend(cards)
             self.outgoing_offers.append((time.time(), cards, offer.uid))
             return True
@@ -106,8 +104,7 @@ class SimplePlayer(base.NullPlayer):
             return self.get_match_with_break(groups, quantity)
 
     def get_match_with_break(self, groups, quantity):
-        """Returns a match by breaking up a group, when applicable
-        """
+        """Returns a match by breaking up a group, when applicable"""
         if not groups:
             return
         smallest = min(groups.values())
@@ -117,10 +114,9 @@ class SimplePlayer(base.NullPlayer):
                     return [card] * quantity
 
     def make_offers(self):
-        """Makes open offers.
-        """
+        """Makes open offers."""
         groups = util.available_card_groups(self.cards, self.locked_cards)
-        for count in [4,3,2,1]:
+        for count in [4, 3, 2, 1]:
             if count in groups.values():
                 self.notify(gameengine.Message.OFFER, count=count)
 

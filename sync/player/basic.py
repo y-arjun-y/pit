@@ -1,5 +1,6 @@
 """Basic player(s) for the Pit game
 """
+
 import copy
 import itertools
 import random
@@ -21,6 +22,7 @@ class BasicPlayer(base.Player):
     - if I have exactly 5 and 5 of two commodities, be able to break one
       of them up and trade less than 5 cards
     """
+
     # number of cycles to let an offer exist before ignoring it forever
     OFFER_EXPIRATION = 2
 
@@ -43,7 +45,7 @@ class BasicPlayer(base.Player):
         4. try to respond to an open offer
         5. make a new offer
         """
-        if random.randrange(0,5) == 4:
+        if random.randrange(0, 5) == 4:
             return None
 
         self.cycle = cycle
@@ -76,8 +78,7 @@ class BasicPlayer(base.Player):
         return self._matching_cards(response.offer)
 
     def trade_confirmation(self, response, hand=None):
-        """Two players have made a trade, including new hand if I'm involved.
-        """
+        """Two players have made a trade, including new hand if I'm involved."""
         if hand and (response.player == self or response.offer.player == self):
             if response.offer in self.my_offers:
                 self.my_offers.remove(response.offer)
@@ -88,8 +89,7 @@ class BasicPlayer(base.Player):
         self.my_offers.remove(offer)
 
     def _get_response(self, offer):
-        """Returns list of cards if response can be made to this offer, or None
-        """
+        """Returns list of cards if response can be made to this offer, or None"""
         return self._matching_cards(offer)
 
     def _matching_cards(self, offer):
@@ -107,14 +107,15 @@ class BasicPlayer(base.Player):
             if quantity == offer.quantity:
                 return [commodity] * quantity
             elif commodity not in [bull, bear]:
-                if bull in self.hand and offer.quantity == quantity+1:
+                if bull in self.hand and offer.quantity == quantity + 1:
                     return [commodity] * quantity + [bull]
-                elif bear in self.hand and offer.quantity == quantity+1:
+                elif bear in self.hand and offer.quantity == quantity + 1:
                     return [commodity] * quantity + [bear]
                 elif (
-                        bull in self.hand and
-                        bear in self.hand and
-                        offer.quantity == quantity+2):
+                    bull in self.hand
+                    and bear in self.hand
+                    and offer.quantity == quantity + 2
+                ):
                     return [commodity] * quantity + [bull, bear]
         return None
 

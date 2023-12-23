@@ -1,15 +1,15 @@
 """Module for base Player class
 """
+
 import random
 
 
 class Player(object):
     def __init__(self):
-        self.name = 'Player {0}'.format(random.randint(1,9999))
+        self.name = "Player {0}".format(random.randint(1, 9999))
 
     def new_game(self, players, commodities):
-        """New game started with list of player names and commodities being used
-        """
+        """New game started with list of player names and commodities being used"""
 
     def new_round(self, hand, card_counts):
         """New round of a game started
